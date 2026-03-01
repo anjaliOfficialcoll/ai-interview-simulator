@@ -1,5 +1,5 @@
 
-    const API_BASE = "http://localhost:5000";
+    const API_BASE = "https://interviewiq-production-b2a2.up.railway.app";
     
     // State Management
     let currentRole = "";
