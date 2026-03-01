@@ -8,6 +8,13 @@
 ![Frontend](https://img.shields.io/badge/Frontend-Vanilla%20JS-yellow)
 ![License](https://img.shields.io/badge/License-MIT-brightgreen)
 
+## 🌐 Live Demo
+
+**Frontend**: [https://ai-interview-simulator-deployed.vercel.app/](https://ai-interview-simulator-deployed.vercel.app/)  
+**Backend API**: [https://interviewiq-production-b2a2.up.railway.app](https://interviewiq-production-b2a2.up.railway.app)
+
+> Try the live application now! Upload your resume, select your role, and practice with AI-powered interview questions.
+
 ## 🚀 Features
 
 ### 🤖 **Gemini AI Integration**
