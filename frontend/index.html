@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>InterviewIQ | AI Interview Practice Platform</title>
+  
+</head>
+
+<body>
+  <main class="app-shell">
+    <!-- 1. Landing Page -->
+    <section id="landingSection" class="section active">
+      <div class="landing">
+        <div class="landing-content">
+          <h1 class="logo">InterviewIQ</h1>
+          <p class="tagline">Master your interview skills with AI-powered practice. Get instant feedback and improve faster.</p>
+          <img src="img.png" alt="Interview preparation illustration" class="landing-image">
+          <button class="btn" onclick="goToSection('resumeSection')">Start Interview</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Resume Upload Section -->
+    <section id="resumeSection" class="section">
+      <button class="back-arrow" onclick="goToSection('landingSection')" title="Go Back">←</button>
+      <div class="panel">
+        <h2 class="panel-title">📄 Upload Your Resume (Optional)</h2>
+        <div class="file-upload" onclick="document.getElementById('resumeInput').click()">
+          <p style="margin:0; color: var(--muted);">Click to upload PDF resume</p>
+          <p style="margin:4px 0 0; font-size:13px; color:#6b7280;">We'll tailor questions based on your experience</p>
+          <input type="file" id="resumeInput" accept=".pdf" onchange="handleResumeUpload(event)">
+          <div id="fileName" class="file-name"></div>
+        </div>
+        <div class="button-group">
+          <button class="btn btn-secondary" onclick="goToSection('roleSection')">Skip</button>
+          <button class="btn" id="analyzeBtn" onclick="analyzeResume()" disabled>Analyze Resume</button>
+        </div>
+        <div class="loading" id="resumeLoading" style="margin-top: 14px;">
+          <span>Analyzing resume</span><span class="dot-loader"></span>
+        </div>
+        <div id="resumeAnalysisCard" class="resume-analysis" style="display:none;">
+          <h3 class="resume-analysis-title">Resume Analysis</h3>
+          <pre id="resumeAnalysisText" class="resume-analysis-text"></pre>
+          <div class="button-group" style="margin-top: 12px;">
+            <button class="btn" onclick="goToSection('roleSection')">Continue to Role Selection</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Role Selection Section -->
+    <section id="roleSection" class="section">
+      <button class="back-arrow" onclick="goToSection('resumeSection')" title="Go Back">←</button>
+      <div class="panel">
+        <h2 class="panel-title">🎯 Select Interview Parameters</h2>
+        <div class="grid">
+          <div>
+            <label for="roleTrigger">Role</label>
+            <div class="custom-dropdown" id="roleDropdown">
+              <button id="roleTrigger" class="dropdown-trigger" type="button">Select a role</button>
+              <div id="roleMenu" class="dropdown-menu">
+                <button class="dropdown-option" data-value="Backend Developer">Backend Developer</button>
+                <button class="dropdown-option" data-value="Frontend Developer">Frontend Developer</button>
+                <button class="dropdown-option" data-value="Full Stack Developer">Full Stack Developer</button>
+                <button class="dropdown-option" data-value="Java Developer">Java Developer</button>
+                <button class="dropdown-option" data-value="Python Developer">Python Developer</button>
+                <button class="dropdown-option" data-value="Node.js Developer">Node.js Developer</button>
+                <button class="dropdown-option" data-value="DevOps Engineer">DevOps Engineer</button>
+                <button class="dropdown-option" data-value="Data Analyst">Data Analyst</button>
+                <button class="dropdown-option" data-value="Data Scientist">Data Scientist</button>
+                <button class="dropdown-option" data-value="Machine Learning Engineer">Machine Learning Engineer</button>
+                <button class="dropdown-option" data-value="QA Engineer">QA Engineer</button>
+                <button class="dropdown-option" data-value="Product Manager">Product Manager</button>
+              </div>
+            </div>
+            <input id="roleValue" type="hidden">
+          </div>
+          <div>
+            <label for="difficulty">Difficulty</label>
+            <select id="difficulty">
+              <option value="Easy">Easy</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" onclick="startInterview()" style="width:100%;">Start Interview</button>
+      </div>
+    </section>
+
+    <!-- 4. Interview Section -->
+    <section id="interviewSection" class="section">
+      <button class="back-arrow" onclick="goToSection('roleSection')" title="Go Back">←</button>
+      <!-- Progress Tracker -->
+      <div class="panel">
+        <h3 class="panel-title">📊 Progress</h3>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="progressBar" style="width:0%"></div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-value" id="questionsAttempted">0</span>
+            <span class="stat-label">Questions</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="averageScore">-</span>
+            <span class="stat-label">Avg Score</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question Display -->
+      <div class="panel">
+        <div class="question-number" id="questionNumber">Question 1</div>
+        <div class="question-card">
+          <div class="question-text" id="questionText">Loading question...</div>
+        </div>
+        <div class="loading" id="questionLoading">
+          <span>Generating question</span><span class="dot-loader"></span>
+        </div>
+        
+        <label for="answerText">Your Answer</label>
+        <textarea id="answerText" placeholder="Type your answer here..."></textarea>
+        
+        <div class="button-group">
+          <button class="btn btn-secondary" onclick="goToSection('roleSection')">Change Role</button>
+          <button class="btn" id="submitAnswerBtn" onclick="submitAnswer()">Submit Answer</button>
+        </div>
+        <div class="loading" id="evaluationLoading">
+          <span>Evaluating answer</span><span class="dot-loader"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Feedback Section -->
+    <section id="feedbackSection" class="section">
+      <button class="back-arrow" onclick="goToSection('interviewSection')" title="Go Back">←</button>
+      <div class="panel">
+        <h2 class="panel-title">✨ Your Performance</h2>
+        
+        <div class="score-card">
+          <div class="score-value" id="feedbackScore">-/10</div>
+          <div class="score-label">Your Score</div>
+        </div>
+
+        <div class="feedback-grid" style="margin-top:20px;">
+          <div class="feedback-section">
+            <h4>✅ Strengths</h4>
+            <div id="feedbackStrengths"><p>Analyzing your answer...</p></div>
+          </div>
+
+          <div class="feedback-section">
+            <h4>🔍 Areas for Improvement</h4>
+            <div id="feedbackImprovements"><p>Analyzing your answer...</p></div>
+          </div>
+
+          <div class="feedback-section">
+            <h4>📝 Model Answer</h4>
+            <div id="feedbackModelAnswer"><p>Generating model answer...</p></div>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button class="btn btn-secondary" onclick="viewProgress()">View Summary</button>
+          <button class="btn" onclick="nextQuestion()">Next Question</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Progress Summary Page -->
+    <section id="progressSection" class="section">
+      <button class="back-arrow" onclick="goToSection('feedbackSection')" title="Go Back">←</button>
+      <div class="panel">
+        <h2 class="panel-title">📈 Interview Summary</h2>
+        
+        <div class="summary-header">
+          <div class="role-badge" id="summaryRole">-</div>
+          <div class="difficulty-badge" id="summaryDifficulty">-</div>
+        </div>
+
+        <div class="progress-bar-container" style="margin: 20px 0;">
+          <div class="progress-bar" id="summaryProgressBar" style="width:0%"></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-value" id="summaryQuestionsTotal">0</span>
+            <span class="stat-label">Total Questions</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="summaryAvgScore">-</span>
+            <span class="stat-label">Average Score</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="summaryHighScore">-</span>
+            <span class="stat-label">Highest Score</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="summaryLowScore">-</span>
+            <span class="stat-label">Lowest Score</span>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top: 20px; background: rgba(10, 16, 34, 0.75);">
+          <h3 style="margin: 0 0 12px; color: var(--primary); font-size: 16px;">📝 Score History</h3>
+          <div id="scoreHistory" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+        </div>
+
+        <div class="button-group" style="margin-top: 20px;">
+          <button class="btn btn-secondary" onclick="goToSection('feedbackSection')">Back to Feedback</button>
+          <button class="btn" onclick="restartInterview()">Start New Interview</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
