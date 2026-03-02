@@ -177,6 +177,10 @@
       loading.classList.add('show');
       document.getElementById('questionNumber').textContent = `Question ${currentQuestionNumber}`;
       document.getElementById('answerText').value = '';
+      
+      // Reset hint display for new question
+      document.getElementById('hintCard').style.display = 'none';
+      document.getElementById('hintText').textContent = '';
 
       try {
         console.log('Loading question, calling:', `${API_BASE}/generate-question`);
@@ -201,6 +205,48 @@
       }
 
       updateProgress();
+    }
+
+    async function requestHint() {
+      const answer = document.getElementById('answerText').value.trim();
+      const hintBtn = document.getElementById('hintBtn');
+      const hintCard = document.getElementById('hintCard');
+      const hintText = document.getElementById('hintText');
+      const loading = document.getElementById('hintLoading');
+      
+      hintBtn.disabled = true;
+      loading.classList.add('show');
+      hintCard.style.display = 'none';
+
+      try {
+        console.log('Requesting hint, calling:', `${API_BASE}/get-hint`);
+        const res = await fetch(`${API_BASE}/get-hint`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            question: currentQuestion, 
+            partialAnswer: answer || null 
+          })
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
+        const data = await res.json();
+        hintText.textContent = data.hint || '💡 Think about the key concepts related to this question.';
+        hintCard.style.display = 'block';
+        
+        // Scroll to hint
+        hintCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } catch (error) {
+        console.error('Hint request error:', error);
+        hintText.textContent = '💡 Think about the key concepts related to this question. Break it down into smaller parts and start with what you know.';
+        hintCard.style.display = 'block';
+      } finally {
+        loading.classList.remove('show');
+        hintBtn.disabled = false;
+      }
     }
 
     async function submitAnswer() {

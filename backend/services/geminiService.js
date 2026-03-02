@@ -142,3 +142,19 @@ export async function analyzeResumeFromAI({ resumeBase64, mimeType = "applicatio
     throw error;
   }
 }
+
+export async function generateHintFromAI(prompt) {
+  if (!model) {
+    throw new Error("Gemini API not initialized. Missing GEMINI_API_KEY.");
+  }
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    console.log("✅ Hint generated successfully via Gemini API");
+    return response.text();
+  } catch (error) {
+    console.error("❌ Gemini API error in generateHintFromAI:", error.message);
+    console.error("Full error:", error);
+    throw error;
+  }
+}

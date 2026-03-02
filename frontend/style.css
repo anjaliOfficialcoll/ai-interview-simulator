@@ -162,6 +162,46 @@
       border: 1px solid var(--card-border);
     }
 
+    .btn-hint {
+      background: linear-gradient(135deg, #ffd700, #ffed4e);
+      color: #1a1a2e;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    }
+
+    .btn-hint:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+    }
+
+    /* Hint Card */
+    .hint-card {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 237, 78, 0.1));
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-left: 4px solid #ffd700;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 16px 0;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .hint-text {
+      color: #f0f0f0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     /* Panel/Card Styles */
     .panel {
       background: var(--card);

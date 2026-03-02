@@ -121,12 +121,21 @@
           <span>Generating question</span><span class="dot-loader"></span>
         </div>
         
+        <!-- Hint Section -->
+        <div id="hintCard" class="hint-card" style="display: none;">
+          <div class="hint-text" id="hintText"></div>
+        </div>
+        
         <label for="answerText">Your Answer</label>
         <textarea id="answerText" placeholder="Type your answer here..."></textarea>
         
         <div class="button-group">
+          <button class="btn btn-hint" id="hintBtn" onclick="requestHint()">💡 Get Hint</button>
           <button class="btn btn-secondary" onclick="goToSection('roleSection')">Change Role</button>
           <button class="btn" id="submitAnswerBtn" onclick="submitAnswer()">Submit Answer</button>
+        </div>
+        <div class="loading" id="hintLoading">
+          <span>Getting hint</span><span class="dot-loader"></span>
         </div>
         <div class="loading" id="evaluationLoading">
           <span>Evaluating answer</span><span class="dot-loader"></span>

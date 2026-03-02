@@ -1,4 +1,4 @@
-import { generateQuestionFromAI, evaluateAnswerFromAI, analyzeResumeFromAI } from "../services/geminiService.js";
+import { generateQuestionFromAI, evaluateAnswerFromAI, analyzeResumeFromAI, generateHintFromAI } from "../services/geminiService.js";
 import { getFallbackQuestion } from "../utils/fallbackQuestions.js";
 import { getFallbackFeedback } from "../utils/fallbackFeedback.js";
 import { getFallbackResumeFeedback } from "../utils/fallbackResumeFeedback.js";
@@ -104,5 +104,48 @@ export async function analyzeResume(req, res) {
     console.warn("⚠️  Using fallback resume feedback instead");
     const fallback = getFallbackResumeFeedback(fileName || "resume.pdf");
     return res.json({ analysis: fallback, source: "fallback" });
+  }
+}
+
+export async function getHint(req, res) {
+  const { question, partialAnswer } = req.body;
+
+  if (!question) {
+    return res.status(400).json({ error: "Question is required" });
+  }
+
+  const prompt = `
+  Interview Question: ${question}
+  ${partialAnswer ? `Current Answer Attempt: ${partialAnswer}` : 'Candidate is unable to answer.'}
+  
+  Provide a helpful hint to guide the candidate toward the right approach. 
+  The hint should:
+  - Be encouraging and supportive
+  - Give a starting point or framework without revealing the full answer
+  - Help them think through the problem
+  - Be 2-3 sentences maximum
+  
+  ${partialAnswer ? 'If their answer is unrelated or off-topic, gently redirect them to the correct approach.' : 'Give them a hint about what topics or concepts to think about.'}
+  `;
+
+  try {
+    const hint = await generateHintFromAI(prompt);
+
+    if (!hint || !hint.trim()) {
+      console.warn("⚠️  Empty response from Gemini API for hint");
+      return res.json({ 
+        hint: "💡 Think about the key concepts related to this question. Break it down into smaller parts and start with what you know.",
+        source: "fallback" 
+      });
+    }
+
+    console.log("✅ Generated hint via Gemini API");
+    res.json({ hint: "💡 " + hint.trim(), source: "ai" });
+  } catch (error) {
+    console.error("❌ Hint generation error:", error.message);
+    res.json({ 
+      hint: "💡 Think about the key concepts related to this question. Break it down into smaller parts and start with what you know.",
+      source: "fallback" 
+    });
   }
 }
