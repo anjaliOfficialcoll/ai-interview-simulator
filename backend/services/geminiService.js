@@ -6,26 +6,47 @@ dotenv.config();
 
 const apiKey = process.env.GEMINI_API_KEY;
 
+if (!apiKey) {
+  console.warn("⚠️  GEMINI_API_KEY not found in environment variables. Using fallback responses only.");
+}
 
-const genAI = new GoogleGenerativeAI(apiKey);
+let genAI;
+let model;
 
-const model = genAI.getGenerativeModel({
-  model: "gemini-flash-latest"
-});
+if (apiKey) {
+  try {
+    genAI = new GoogleGenerativeAI(apiKey);
+    model = genAI.getGenerativeModel({
+      model: "gemini-flash-latest"
+    });
+  } catch (error) {
+    console.error("Failed to initialize Gemini AI:", error.message);
+  }
+}
 
 export async function generateQuestionFromAI(prompt) {
+  if (!model) {
+    throw new Error("Gemini API not initialized. Missing GEMINI_API_KEY.");
+  }
   const result = await model.generateContent(prompt);
   const response = await result.response;
   return response.text();
 }
 
 export async function evaluateAnswerFromAI(prompt) {
+  if (!model) {
+    throw new Error("Gemini API not initialized. Missing GEMINI_API_KEY.");
+  }
   const result = await model.generateContent(prompt);
   const response = await result.response;
   return response.text();
 }
 
 export async function analyzeResumeFromAI({ resumeBase64, mimeType = "application/pdf", fileName = "resume.pdf" }) {
+  if (!model) {
+    throw new Error("Gemini API not initialized. Missing GEMINI_API_KEY.");
+  }
+  
   const prompt = `
   Analyze this resume and return concise interview preparation guidance in this exact format:
   Score: <number out of 10>
