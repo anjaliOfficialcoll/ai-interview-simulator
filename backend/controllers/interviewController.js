@@ -19,16 +19,18 @@ export async function generateQuestion(req, res) {
     const question = await generateQuestionFromAI(prompt);
 
     if (!question || !question.trim()) {
+      console.warn("⚠️  Empty response from Gemini API, using fallback");
       const fallback = getFallbackQuestion(role, difficulty);
-      return res.json({ question: fallback });
+      return res.json({ question: fallback, source: "fallback" });
     }
 
-    res.json({ question: question.trim() });
+    console.log("✅ Generated question via Gemini API");
+    res.json({ question: question.trim(), source: "ai" });
   } catch (error) {
     console.error("❌ AI failed with error:", error.message);
-    console.error("Full error details:", error);
+    console.warn("⚠️  Using fallback question instead");
     const fallback = getFallbackQuestion(role, difficulty);
-    res.json({ question: fallback });
+    res.json({ question: fallback, source: "fallback" });
   }
 }
 
@@ -50,15 +52,18 @@ export async function evaluateAnswer(req, res) {
     const feedback = await evaluateAnswerFromAI(prompt);
 
     if (!feedback || !feedback.trim()) {
+      console.warn("⚠️  Empty response from Gemini API, using fallback");
       const fallback = getFallbackFeedback(question, answer);
-      return res.json({ feedback: fallback });
+      return res.json({ feedback: fallback, source: "fallback" });
     }
 
-    res.json({ feedback: feedback.trim() });
+    console.log("✅ Generated feedback via Gemini API");
+    res.json({ feedback: feedback.trim(), source: "ai" });
   } catch (error) {
-    console.error("Evaluation error:", error.message);
+    console.error("❌ Evaluation error:", error.message);
+    console.warn("⚠️  Using fallback feedback instead");
     const fallback = getFallbackFeedback(question, answer);
-    res.json({ feedback: fallback });
+    res.json({ feedback: fallback, source: "fallback" });
   }
 }
 
@@ -77,13 +82,16 @@ export async function analyzeResume(req, res) {
     });
 
     if (!analysis || !analysis.trim()) {
+      console.warn("⚠️  Empty response from Gemini API, using fallback");
       const fallback = getFallbackResumeFeedback(fileName || "resume.pdf");
       return res.json({ analysis: fallback, source: "fallback" });
     }
 
+    console.log("✅ Analyzed resume via Gemini API");
     return res.json({ analysis: analysis.trim(), source: "ai" });
   } catch (error) {
-    console.error("Resume analysis error:", error.message);
+    console.error("❌ Resume analysis error:", error.message);
+    console.warn("⚠️  Using fallback resume feedback instead");
     const fallback = getFallbackResumeFeedback(fileName || "resume.pdf");
     return res.json({ analysis: fallback, source: "fallback" });
   }
