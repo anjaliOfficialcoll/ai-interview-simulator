@@ -1,0 +1,14 @@
+{
+  "name": "interviewiq",
+  "version": "1.0.0",
+  "description": "AI Interview Simulator",
+  "private": true,
+  "scripts": {
+    "start": "cd backend && npm install && npm start",
+    "dev": "cd backend && npm start"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
