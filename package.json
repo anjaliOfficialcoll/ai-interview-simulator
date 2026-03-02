@@ -2,13 +2,15 @@
   "name": "interviewiq",
   "version": "1.0.0",
   "description": "AI Interview Simulator",
+  "type": "module",
   "private": true,
   "scripts": {
-    "start": "npm --prefix backend start",
-    "dev": "npm --prefix backend start",
-    "install": "npm --prefix backend install"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "postinstall": "cd backend && npm install"
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "dependencies": {}
 }
