@@ -1,9 +1,6 @@
 
-    // Auto-detect environment based on domain
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const API_BASE = isLocal 
-      ? 'http://localhost:5000'
-      : 'https://interviewiq-production-b2a2.up.railway.app'; // Replace with YOUR Railway backend URL
+    // Auto-detect backend URL based on environment
+    const API_BASE = window.location.origin; // Use same domain for API calls
     
     console.log('🔗 Backend URL:', API_BASE);
     console.log('🌐 Current hostname:', window.location.hostname);
@@ -211,17 +208,23 @@
       document.getElementById('submitAnswerBtn').disabled = true;
 
       try {
+        console.log('Submitting answer, calling:', `${API_BASE}/evaluate-answer`);
         const res = await fetch(`${API_BASE}/evaluate-answer`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ question: currentQuestion, answer })
         });
 
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
         const data = await res.json();
         displayFeedback(data.feedback);
         totalQuestions++;
         goToSection('feedbackSection');
       } catch (error) {
+        console.error('Answer evaluation error:', error);
         alert('Error evaluating answer. Please try again.');
       } finally {
         loading.classList.remove('show');
