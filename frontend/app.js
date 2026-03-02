@@ -97,14 +97,22 @@
           })
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+
+        // Check if there was an error (invalid resume)
+        if (!response.ok || data.error) {
+          const errorMessage = data.error || data.analysis || 'Invalid file uploaded. Please upload a valid resume.';
+          console.error('Invalid resume uploaded:', errorMessage);
+          analysisTextElement.textContent = `❌ ${errorMessage}`;
+          analysisCard.style.display = 'block';
+          analysisCard.style.borderColor = '#ff6b6b';
+          return;
         }
 
-        const data = await response.json();
         const analysis = data.analysis || 'No analysis returned.';
         analysisTextElement.textContent = analysis;
         analysisCard.style.display = 'block';
+        analysisCard.style.borderColor = '';
         tryPrefillRoleAndDifficulty(analysis);
       } catch (error) {
         console.error('Resume analysis error:', error);

@@ -65,7 +65,44 @@ export async function analyzeResumeFromAI({ resumeBase64, mimeType = "applicatio
     throw new Error("Gemini API not initialized. Missing GEMINI_API_KEY.");
   }
   
-  const prompt = `
+  // First, validate if the uploaded file is actually a resume
+  const validationPrompt = `
+  Look at this uploaded document and determine if it is a valid resume/CV.
+  
+  Respond with ONLY "VALID" if it's a resume/CV, or "INVALID" if it's not.
+  
+  A valid resume/CV typically contains:
+  - Name or contact information
+  - Work experience, education, or skills
+  - Professional information
+  
+  Do NOT include any other text in your response.
+  `;
+
+  try {
+    // Validate the document first
+    const validationResult = await model.generateContent([
+      { text: validationPrompt },
+      {
+        inlineData: {
+          mimeType,
+          data: resumeBase64,
+        },
+      },
+    ]);
+
+    const validationResponse = await validationResult.response;
+    const validationText = validationResponse.text().trim().toUpperCase();
+
+    console.log("📄 Resume validation result:", validationText);
+
+    if (validationText !== "VALID") {
+      console.warn("❌ Uploaded file is not a valid resume");
+      throw new Error("The uploaded file does not appear to be a valid resume. Please upload a resume/CV with your personal information, work experience, education, or skills.");
+    }
+
+    // If valid, proceed with analysis
+    const analysisPrompt = `
   Analyze this resume and return concise interview preparation guidance in this exact format:
   Score: <number out of 10>
   Suggested Role: <one role>
@@ -86,9 +123,8 @@ export async function analyzeResumeFromAI({ resumeBase64, mimeType = "applicatio
   File name: ${fileName}
   `;
 
-  try {
     const result = await model.generateContent([
-      { text: prompt },
+      { text: analysisPrompt },
       {
         inlineData: {
           mimeType,

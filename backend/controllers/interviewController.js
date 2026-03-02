@@ -91,6 +91,16 @@ export async function analyzeResume(req, res) {
     return res.json({ analysis: analysis.trim(), source: "ai" });
   } catch (error) {
     console.error("❌ Resume analysis error:", error.message);
+    
+    // Check if it's an invalid resume error
+    if (error.message.includes("does not appear to be a valid resume")) {
+      console.warn("⚠️  Invalid resume file uploaded");
+      return res.status(400).json({ 
+        error: error.message,
+        analysis: error.message 
+      });
+    }
+    
     console.warn("⚠️  Using fallback resume feedback instead");
     const fallback = getFallbackResumeFeedback(fileName || "resume.pdf");
     return res.json({ analysis: fallback, source: "fallback" });
